@@ -1,0 +1,30 @@
+{
+  "name": "messaging",
+  "version": "1.0.0",
+  "description": "Messaging service including push, sms and email ",
+  "main": "index.js",
+  "scripts": {
+    "start" : "./src/rpcserver.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fakhrad/messaging.git"
+  },
+  "keywords": [
+    "Messaging",
+    "push"
+  ],
+  "author": "Fakhreddin Rezaei",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fakhrad/messaging/issues"
+  },
+  "homepage": "https://github.com/fakhrad/messaging#readme",
+  "dependencies": {
+    "@sendgrid/mail": "6.3.1",
+    "amqplib": "0.5.3",
+    "firebase-admin": "7.0.0",
+    "kavenegar": "1.1.4"
+  }
+}
