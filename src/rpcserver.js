@@ -1,7 +1,7 @@
 var amqp = require('amqplib/callback_api');
 const msgController = require('./controllers/messagingController')
 
-var rabbitHost = process.env.RABBITMQ_HOST || "amqp://localhost:5672";
+var rabbitHost = process.env.RABBITMQ_HOST || "amqp://reqter:reqter@13.69.148.176:5672";
 
 var amqpConn = null;
 function start() {
