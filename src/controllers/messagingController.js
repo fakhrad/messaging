@@ -29,7 +29,7 @@ exports.sendMessage = (phoneNumber, message, cb)=>{
     var result = {success : false, data : null, error : null };
     if (service != undefined)
     {
-        service.sendMessage(phoneNumber, "کد ورود شما به میواپ : " + message, function(status, response){
+        service.sendMessage(phoneNumber, message, function(status, response){
             if (status != 200)
             {
                 result.success = false;
