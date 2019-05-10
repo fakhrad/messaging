@@ -19,7 +19,7 @@ function start() {
     });
     conn.on("close", function() {
       console.error("[AMQP] reconnecting");
-      return setTimeout(start, 1000);
+      //return setTimeout(start, 1000);
     });
 
     console.log("[AMQP] connected");
@@ -32,7 +32,7 @@ function whenConnected() {
     amqpConn.createChannel( (err, ch) => {
         if (err) {
             console.error("[AMQP]", err.message);
-            return setTimeout(start, 1000);
+            //return setTimeout(start, 1000);
         }
         ch.on("error", function(err) {
         console.error("[AMQP] channel error", err.message);
