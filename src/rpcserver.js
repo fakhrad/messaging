@@ -43,44 +43,87 @@ function whenConnected() {
         console.log('Client connected.');
         this.channel = ch;
 
-        ch.prefetch(10);
+        ch.prefetch(1);
         console.log('Messaging service broker started!');
 
       //SendMessage API
       ch.assertQueue("sendMessage", {durable: false}, (err, q)=>{
         ch.consume(q.queue, function reply(msg) {
             var req = JSON.parse(msg.content.toString('utf8'));
-            msgController.sendMessage(req.body.phoneNumber, req.body.message, (result)=>{
-              console.log(result);
-              ch.sendToQueue(msg.properties.replyTo, new Buffer.from(JSON.stringify(result)), { correlationId: msg.properties.correlationId } );
-              ch.ack(msg);
-          });
+            try{
+                msgController.sendMessage(req.body.phoneNumber, req.body.message, (result)=>{
+                  console.log(result);
+                  ch.sendToQueue(msg.properties.replyTo, new Buffer.from(JSON.stringify(result)), { correlationId: msg.properties.correlationId } );
+                  ch.ack(msg);
+              });
+            }
+            catch(ex)
+            {
+              console.log(ex);
+              ch.sendToQueue(msg.properties.replyTo, new Buffer.from(JSON.stringify(ex)), { correlationId: msg.properties.correlationId } );
+                  ch.ack(msg);
+            } 
+
         });
       });
     //SendMessage API
     ch.assertQueue("sendVerifyCode", {durable: false}, (err, q)=>{
       ch.consume(q.queue, function reply(msg) {
           var req = JSON.parse(msg.content.toString('utf8'));
-          console.log(req);
-          //msgController.sendVerfiyCode(req.body.phoneNumber, req.body.code, (result)=>{
-            msgController.sendMessage(req.body.phoneNumber, req.body.code, (result)=>{
-              if (!result.success)
-                console.log(result);
+          try{
+                  msgController.sendMessage(req.body.phoneNumber, req.body.code, (result)=>{
+                    if (!result.success)
+                      console.log(result);
+                    ch.sendToQueue(msg.properties.replyTo, new Buffer.from(JSON.stringify(result)), { correlationId: msg.properties.correlationId } );
+                    ch.ack(msg);
+              });
+          }
+          catch(ex)
+          {
+            console.log(ex);
+            ch.sendToQueue(msg.properties.replyTo, new Buffer.from(JSON.stringify(ex)), { correlationId: msg.properties.correlationId } );
+                ch.ack(msg);
+          } 
+
+      });
+    });
+    //Send Email Message API
+    ch.assertQueue("sendEmailMessage", {durable: false}, (err, q)=>{
+      ch.consume(q.queue, function reply(msg) {
+          var req = JSON.parse(msg.content.toString('utf8'));
+          try{
+            msgController.sendEmailMessage(req.body.message, (result)=>{
+              console.log(result);
               ch.sendToQueue(msg.properties.replyTo, new Buffer.from(JSON.stringify(result)), { correlationId: msg.properties.correlationId } );
               ch.ack(msg);
-        });
+          });
+          }
+          catch(ex)
+          {
+            console.log(ex);
+            ch.sendToQueue(msg.properties.replyTo, new Buffer.from(JSON.stringify(ex)), { correlationId: msg.properties.correlationId } );
+                ch.ack(msg);
+          } 
+
       });
     });
     //SendPushMessge API
     ch.assertQueue("sendPushMessage", {durable: false}, (err, q)=>{
       ch.consume(q.queue, function reply(msg) {
           var req = JSON.parse(msg.content.toString('utf8'));
-          console.log(req);
-          msgController.sendPushMessage(req.body.device, req.body.message, req.body.data, (result)=>{
-            console.log(result);
-            ch.sendToQueue(msg.properties.replyTo, new Buffer.from(JSON.stringify(result)), { correlationId: msg.properties.correlationId } );
-            ch.ack(msg);
-        });
+          try{
+            msgController.sendPushMessage(req.body.device, req.body.message, req.body.data, (result)=>{
+              ch.sendToQueue(msg.properties.replyTo, new Buffer.from(JSON.stringify(result)), { correlationId: msg.properties.correlationId } );
+              ch.ack(msg);
+          });
+          }
+          catch(ex)
+          {
+            console.log(ex);
+            ch.sendToQueue(msg.properties.replyTo, new Buffer.from(JSON.stringify(ex)), { correlationId: msg.properties.correlationId } );
+                ch.ack(msg);
+          } 
+
       });
     });
     });

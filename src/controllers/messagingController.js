@@ -67,3 +67,25 @@ exports.sendPushMessage = (device, message, data, cb)=>{
         });
     }
 }
+
+exports.sendEmailMessage = (message, cb)=>{
+    const service = provider.getemailservice();
+    var result = {success : false, data : null, error : null };
+    if (service != undefined)
+    {
+        service.sendMessage(message, function(status, response){
+            if (status != 200)
+            {
+                result.success = false;
+                result.data =  response;
+                result.error = status;
+                cb(result);       
+                return; 
+            }
+            result.success = true;
+            result.error = undefined;
+            result.data =  response;
+            cb(result); 
+        });
+    }
+}
