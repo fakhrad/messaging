@@ -138,6 +138,14 @@ function whenConnected() {
        channel.assertExchange(exchange, 'fanout', {
          durable: false
        });
+
+       channel.assertExchange("contentservice", 'fanout', {
+        durable: false
+       });
+
+       channel.assertExchange("adminauth", 'fanout', {
+         durable: false
+       });
  
        ch.assertQueue("adminuserregistered", {durable: false}, (err, q)=>{
          if (!err)

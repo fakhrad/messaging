@@ -13,7 +13,6 @@ exports.sendMessage = (msg, callback)=>
       };
       sgMail.send(message, false).then((response) => {
         // Response is a message ID string.
-        console.log('Successfully sent message:', response);
         callback(200, response);
         })
         .catch((error) => {
