@@ -94,10 +94,22 @@ var sendEmailMessage = (message, cb)=>{
 exports.sendEmailMessage = sendEmailMessage;
 
 exports.sendEmailByTemplate = (templateId, data, cb)=>{
-    templateManager.getTemplateById(templateId, data, (template)=>{
+    templateManager.getTemplateById(templateId, (result)=>{
         if (template.success)
         {
-            sendEmailMessage(template.data, cb);
+            var template = result.data;
+            console.log(JSON.stringify(template));
+            // template.body.replace("{@first_name}", data.first_name);
+            var message = {
+                to: data.to,
+                from: "admin@reqter.com",
+                subject: template.title.fa,
+                text: undefined,
+                html: template.body
+            };
+            console.log(JSON.stringify(message));
+
+            sendEmailMessage(message, cb);
         }
     });
     
