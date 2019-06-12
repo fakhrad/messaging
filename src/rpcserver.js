@@ -150,6 +150,7 @@ function whenConnected() {
              try
              {
                 adminController.registeruser(req, (result)=>{
+                  console.log("Admin user result finished. checking result : " + JSON.stringify(result));
                   if (result.success)
                   {
                     msgController.sendEmailByTemplate('5cffc3487e01a5006b9937f6', result.data, (emailResult)=>{
