@@ -94,9 +94,11 @@ var sendEmailMessage = (message, cb)=>{
 exports.sendEmailMessage = sendEmailMessage;
 
 exports.sendEmailByTemplate = (templateId, data, cb)=>{
-    const template = templateManager.getTemplateById(templateId, data);
-    if (template.success)
-    {
-        sendEmailMessage(template.data, cb);
-    }
+    templateManager.getTemplateById(templateId, data, (template)=>{
+        if (template.success)
+        {
+            sendEmailMessage(template.data, cb);
+        }
+    });
+    
 }
