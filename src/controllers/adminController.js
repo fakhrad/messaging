@@ -175,7 +175,7 @@ var registerUser = function(req, cb)
         }
         //Successfull. 
         console.log('User imported successfully');
-        result.success = false;
+        result.success = true;
         result.data =  docs;
         result.error = undefined;
         cb(result);
