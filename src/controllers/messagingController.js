@@ -101,7 +101,7 @@ exports.sendEmailByTemplate = (templateId, data, cb)=>{
             console.log(JSON.stringify(data));
             // template.body.replace("{@first_name}", data.first_name);
             var message = {
-                to: data.email,
+                to: data.username,
                 from: "admin@reqter.com",
                 subject: template.title.fa,
                 text: undefined,
