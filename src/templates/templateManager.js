@@ -7,7 +7,7 @@ exports.getTemplateById = (templateId, callback)=>{
             result.success = false;
             result.data =  undefined;
             result.error = err;
-            cb(result);       
+            callback(result);       
             return; 
         }
         else
@@ -17,13 +17,13 @@ exports.getTemplateById = (templateId, callback)=>{
                 result.success = true;
                 result.data =  template;
                 result.error = undefined;
-                cb(result);       
+                callback(result);       
                 return; 
             }
             result.success = false;
             result.data =  undefined;
             result.error = undefined;
-            cb(result);       
+            callback(result);       
             return; 
         }
     });
