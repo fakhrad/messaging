@@ -175,7 +175,10 @@ var registerUser = function(req, cb)
         }
         //Successfull. 
         console.log('User imported successfully');
-        cb(docs);
+        result.success = false;
+        result.data =  docs;
+        result.error = err;
+        cb(result);
     });
 };
 
