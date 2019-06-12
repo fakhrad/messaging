@@ -1,5 +1,10 @@
 var amqp = require('amqplib/callback_api');
-const msgController = require('./controllers/messagingController')
+const msgController = require('./controllers/messagingController');
+const adminController = require('./controllers/adminController');
+const spaceController = require('./controllers/spaceController');
+const AdminUsers = require('./models/adminuser');
+
+var db = require('./db/init-db');
 
 var rabbitHost = process.env.RABBITMQ_HOST || "amqp://gvgeetrh:6SyWQAxDCpcdg1S0Dc-Up0sUxfmBUVZU@chimpanzee.rmq.cloudamqp.com/gvgeetrh";
 //var rabbitHost = process.env.RABBITMQ_HOST || "amqp://localhost:5672";
@@ -126,6 +131,66 @@ function whenConnected() {
 
       });
     });
+
+       //Exchanges
+       var exchange = 'messaging';
+
+       channel.assertExchange(exchange, 'direct', {
+         durable: false
+       });
+ 
+       ch.assertQueue("adminuserregistered", {durable: false}, (err, q)=>{
+         if (!err)
+         {
+           ch.bindQueue(q.queue, "adminauth", "adminuserregistered")
+           ch.consume(q.queue, function(msg) {
+             // console.log(msg);
+             var req = JSON.parse(msg.content.toString('utf8'));
+             console.log("Admin user registered. adding to local database and sending activation email");
+             try
+             {
+                adminController.registeruser(req, (result)=>{
+                  if (result.success)
+                  {
+                    msgController.sendEmailByTemplate('activateAccount', result.data, (emailResult)=>{
+                      
+                    });
+                  }
+                });
+             }
+             catch(ex)
+             {
+               console.log(ex);
+             }
+           }, {
+             noAck: true
+           });
+         }
+       });
+ 
+       ch.assertQueue("spacecreated", {durable: false}, (err, q)=>{
+        if (!err)
+        {
+          ch.bindQueue(q.queue, "contentservice", "spacecreated")
+          ch.consume(q.queue, function(msg) {
+            // console.log(msg);
+            var req = JSON.parse(msg.content.toString('utf8'));
+            console.log("New space created. adding to local database and sending activation email to space admin",);
+            try
+            {
+                spaceController.createuserspace(req, (result)=> {});
+            }
+            catch(ex)
+            {
+                console.log(ex);
+            }
+          }, {
+            noAck: true
+          });
+        }
+    });
     });
   };
 start();
+
+db();

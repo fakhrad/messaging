@@ -1,4 +1,5 @@
 const provider = require('./../providerHelper');
+const templateManager = require('../templates/templateManager');
 
 exports.sendVerfiyCode = (phoneNumber, code, cb)=>{
     var result = {success : false, data : null, error : null };
@@ -68,7 +69,7 @@ exports.sendPushMessage = (device, message, data, cb)=>{
     }
 }
 
-exports.sendEmailMessage = (message, cb)=>{
+var sendEmailMessage = (message, cb)=>{
     const service = provider.getemailservice();
     var result = {success : false, data : null, error : null };
     if (service != undefined)
@@ -87,5 +88,14 @@ exports.sendEmailMessage = (message, cb)=>{
             result.data =  response;
             cb(result); 
         });
+    }
+}
+exports.sendEmailMessage = sendEmailMessage;
+
+exports.sendEmailByTemplate = (templateId, data, cb)=>{
+    const template = templateManager.getTemplateById(templateName, data);
+    if (template.success)
+    {
+        sendEmailMessage(template.data, cb);
     }
 }
