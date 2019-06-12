@@ -70,6 +70,7 @@ exports.sendPushMessage = (device, message, data, cb)=>{
 }
 
 var sendEmailMessage = (message, cb)=>{
+    console.log("Start sending email ");
     const service = provider.getemailservice();
     var result = {success : false, data : null, error : null };
     if (service != undefined)
@@ -93,7 +94,7 @@ var sendEmailMessage = (message, cb)=>{
 exports.sendEmailMessage = sendEmailMessage;
 
 exports.sendEmailByTemplate = (templateId, data, cb)=>{
-    const template = templateManager.getTemplateById(templateName, data);
+    const template = templateManager.getTemplateById(templateId, data);
     if (template.success)
     {
         sendEmailMessage(template.data, cb);

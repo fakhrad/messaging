@@ -152,7 +152,7 @@ function whenConnected() {
                 adminController.registeruser(req, (result)=>{
                   if (result.success)
                   {
-                    msgController.sendEmailByTemplate('activateAccount', result.data, (emailResult)=>{
+                    msgController.sendEmailByTemplate('5cffc3487e01a5006b9937f6', result.data, (emailResult)=>{
                       
                     });
                   }
