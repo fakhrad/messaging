@@ -95,7 +95,7 @@ exports.sendEmailMessage = sendEmailMessage;
 
 exports.sendEmailByTemplate = (templateId, data, cb)=>{
     templateManager.getTemplateById(templateId, (result)=>{
-        if (template.success)
+        if (result.success)
         {
             var template = result.data;
             console.log(JSON.stringify(template));
