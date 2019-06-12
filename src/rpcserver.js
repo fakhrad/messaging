@@ -135,7 +135,7 @@ function whenConnected() {
        //Exchanges
        var exchange = 'messaging';
 
-       channel.assertExchange(exchange, 'direct', {
+       channel.assertExchange(exchange, 'fanout', {
          durable: false
        });
  
