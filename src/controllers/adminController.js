@@ -161,25 +161,32 @@ var findByUserName = function(req, cb)
 };
 var registerUser = function(req, cb)
 {
+    if (!(req && req.body && req.body._id))
+    {
+        console.log('Invalid reqister user request recieved : ' + req);
+        return;
+    }
     console.log('Importing admin user');
     console.log(req.body);
-    User.insertMany([req.body], (err, docs)=>{
+    User.findByIdAndUpdate(req.body._id, req.body, {upsert:true}).exec((err, admin)=>{
         var result = {success : false, data : null, error : null };
         if (err)
         {
             result.success = false;
             result.data =  undefined;
             result.error = err;
+            if (cb)
             cb(result);       
             return; 
         }
         //Successfull. 
         console.log('User imported successfully');
         result.success = true;
-        result.data =  docs[0];
+        result.data =  admin;
         result.error = undefined;
+        if (cb)
         cb(result);
-    });
+    });  
 };
 
 //Export functions
