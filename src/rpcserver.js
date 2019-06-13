@@ -135,19 +135,19 @@ function whenConnected() {
        //Exchanges
        var exchange = 'messaging';
 
-       channel.assertExchange(exchange, 'fanout', {
+       ch.assertExchange(exchange, 'fanout', {
          durable: false
        });
 
-       channel.assertExchange("contentservice", 'fanout', {
+       ch.assertExchange("contentservice", 'fanout', {
         durable: false
        });
 
-       channel.assertExchange("adminauth", 'fanout', {
+       ch.assertExchange("adminauth", 'fanout', {
          durable: false
        });
  
-       ch.assertQueue("adminuserregistered", {durable: false}, (err, q)=>{
+       ch.assertQueue("messagingadminuserregistered", {durable: false}, (err, q)=>{
          if (!err)
          {
            ch.bindQueue(q.queue, "adminauth", "adminuserregistered")
@@ -177,7 +177,7 @@ function whenConnected() {
          }
        });
  
-       ch.assertQueue("spacecreated", {durable: false}, (err, q)=>{
+       ch.assertQueue("messagingspacecreated", {durable: false}, (err, q)=>{
         if (!err)
         {
           ch.bindQueue(q.queue, "contentservice", "spacecreated")
