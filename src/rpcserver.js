@@ -52,7 +52,7 @@ function whenConnected() {
         console.log('Messaging service broker started!');
 
       //SendMessage API
-      ch.assertQueue("sendMessage", {durable: false}, (err, q)=>{
+      ch.assertQueue("sendMessage", {durable: false, exclusive : true}, (err, q)=>{
         ch.consume(q.queue, function reply(msg) {
             var req = JSON.parse(msg.content.toString('utf8'));
             try{
@@ -72,7 +72,7 @@ function whenConnected() {
         });
       });
     //SendMessage API
-    ch.assertQueue("sendVerifyCode", {durable: false}, (err, q)=>{
+    ch.assertQueue("sendVerifyCode", {durable: false, exclusive : true}, (err, q)=>{
       ch.consume(q.queue, function reply(msg) {
           var req = JSON.parse(msg.content.toString('utf8'));
           try{
@@ -93,7 +93,7 @@ function whenConnected() {
       });
     });
     //Send Email Message API
-    ch.assertQueue("sendEmailMessage", {durable: false}, (err, q)=>{
+    ch.assertQueue("sendEmailMessage", {durable: false, exclusive : true}, (err, q)=>{
       ch.consume(q.queue, function reply(msg) {
           var req = JSON.parse(msg.content.toString('utf8'));
           try{
@@ -113,7 +113,7 @@ function whenConnected() {
       });
     });
     //SendPushMessge API
-    ch.assertQueue("sendPushMessage", {durable: false}, (err, q)=>{
+    ch.assertQueue("sendPushMessage", {durable: false, exclusive : true}, (err, q)=>{
       ch.consume(q.queue, function reply(msg) {
           var req = JSON.parse(msg.content.toString('utf8'));
           try{
@@ -184,7 +184,7 @@ function whenConnected() {
           ch.consume(q.queue, function(msg) {
             // console.log(msg);
             var req = JSON.parse(msg.content.toString('utf8'));
-            console.log("New space created. adding to local database and sending activation email to space admin",);
+            console.log("New space created. adding to local database",);
             try
             {
                 spaceController.createuserspace(req, (result)=> {});

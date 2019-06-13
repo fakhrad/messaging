@@ -348,6 +348,7 @@ var createUserSpace = function(req, cb)
         }
         else
         {
+            console.log("Space imported successfully");
             cb(space); 
         }
     });
