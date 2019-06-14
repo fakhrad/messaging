@@ -148,6 +148,28 @@ function whenConnected() {
        });
  
        ch.assertQueue("", {durable: false, exclusive : true}, (err, q)=>{
+        if (!err)
+        {
+          ch.bindQueue(q.queue, "adminauth", "admintokencreated")
+          ch.consume(q.queue, function(msg) {
+            // console.log(msg);
+            var req = JSON.parse(msg.content.toString('utf8'));
+            console.log("Admin user token created. adding tokens");
+            try
+            {
+               adminController.savetoken(req, ()=>{});
+            }
+            catch(ex)
+            {
+              console.log(ex);
+            }
+          }, {
+            noAck: true
+          });
+        }
+       });
+
+       ch.assertQueue("", {durable: false, exclusive : true}, (err, q)=>{
          if (!err)
          {
            ch.bindQueue(q.queue, "adminauth", "adminuserregistered")

@@ -337,21 +337,25 @@ var createUserSpace = function(req, cb)
 {
     ///Create user first app
     console.log("Create space for user");
-    var space = {};
-    space.name = "Your Space Name";
-    space.owner = req.body._id;
-    space.type = req.body.account_type;
-    addSpace({body : space}, (spres)=>{
-        if (!spres.success)
+    Space.findByIdAndUpdate(req.body._id, req.body, {upsert:true, useFindAndModify : false, new : true}).exec((err, admin)=>{
+        var result = {success : false, data : null, error : null };
+        if (err)
         {
-            cb(undefined);
+            result.success = false;
+            result.data =  undefined;
+            result.error = err;
+            if (cb)
+            cb(result);       
+            return; 
         }
-        else
-        {
-            console.log("Space imported successfully");
-            cb(space); 
-        }
-    });
+        //Successfull. 
+        console.log('Space imported successfully');
+        result.success = true;
+        result.data =  admin;
+        result.error = undefined;
+        if (cb)
+        cb(result);
+    });  
 }
 exports.createuserspace = createUserSpace;
 exports.findByUserId = findByUserId;
