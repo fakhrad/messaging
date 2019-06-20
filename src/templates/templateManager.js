@@ -28,3 +28,14 @@ exports.getTemplateById = (templateId, callback)=>{
         }
     });
 }
+
+exports.bind = (template, data)=>{
+    console.log("Binding template to data-->" +JSON.stringify(template) + "----" + JSON.stringify(data));
+    Object.keys(data).forEach(key => {
+        var value = data[key];
+        if (value)
+        {
+            template.body = template.body.replace("{@" + key + "}", value.toString());
+        }
+    });
+}

@@ -99,13 +99,13 @@ exports.sendEmailByTemplate = (templateId, data, cb)=>{
         {
             var template = result.data;
             console.log(JSON.stringify(data));
-            // template.body.replace("{@first_name}", data.first_name);
+            templateManager.bind(template, data);
             var message = {
                 to: data.username,
-                from: "admin@reqter.com",
+                from: "admin@reqter.com",//Space notification email name
                 subject: template.title.fa,
-                text: undefined,
-                html: template.body
+                text: template.isHtml ? undefined : data.body,
+                html: template.isHtml ? data.body : undefined,
             };
             console.log(JSON.stringify(message));
 
