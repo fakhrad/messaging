@@ -29,8 +29,8 @@ exports.getTemplateById = (templateId, callback)=>{
     });
 }
 
-exports.bind = (template, data)=>{
-    console.log("Binding template to data-->" +JSON.stringify(template) + "----" + JSON.stringify(data));
+exports.bind = (template, data, user, space)=>{
+    console.log("Binding template to data-->\r\n" +JSON.stringify(template) + "\r\n----" + JSON.stringify(data));
     Object.keys(data).forEach(key => {
         var value = data[key];
         if (value)
@@ -38,4 +38,6 @@ exports.bind = (template, data)=>{
             template.body = template.body.replace("{@" + key + "}", value.toString());
         }
     });
+    template.body = template.body.replace("{@appName}", "Reqter");
+    template.body = template.body.replace("{@link}", "http://app.reqter.com/verify/" + data._id);
 }
