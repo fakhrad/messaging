@@ -104,8 +104,8 @@ exports.sendEmailByTemplate = (templateId, data, cb)=>{
                 to: data.username,
                 from: "admin@reqter.com",//Space notification email name
                 subject: template.title.fa,
-                text: template.isHtml ? undefined : data.body,
-                html: template.isHtml ? data.body : undefined,
+                text: template.isHtml ? undefined : template.body,
+                html: template.isHtml ? template.body : undefined,
             };
             console.log(JSON.stringify(message));
 
