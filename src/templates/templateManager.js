@@ -29,17 +29,17 @@ exports.getTemplateById = (templateId, callback)=>{
     });
 }
 
-exports.bind = (template, data, user, space)=>{
-    console.log("Binding template to data-->\r\n" +JSON.stringify(template) + "\r\n----" + JSON.stringify(data));
+exports.bind = (text, data, user, space)=>{
+    //console.log("Binding template to data-->\r\n" +JSON.stringify(template) + "\r\n----" + JSON.stringify(data));
     Object.keys(data).forEach(key => {
         var value = data[key];
         if (value)
         {
-            template.body = template.body.replace("{@" + key + "}", value.toString());
+            text = text.replace("{@" + key + "}", value.toString());
         }
     });
-    console.log(template.body);
-    template.body = template.body.replace("{@appName}", "Reqter");
-    template.body = template.body.replace("{@link}", "http://app.reqter.com/verify/" + data._id);
-    console.log(template.body);
+    console.log(text);
+    text = text.replace("{@appName}", "Reqter");
+    text = text.replace("{@link}", "http://app.reqter.com/verify/" + data._id);
+    console.log(text);
 }
