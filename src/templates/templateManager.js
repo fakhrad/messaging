@@ -38,6 +38,8 @@ exports.bind = (template, data, user, space)=>{
             template.body = template.body.replace("{@" + key + "}", value.toString());
         }
     });
+    console.log(template.body);
     template.body = template.body.replace("{@appName}", "Reqter");
     template.body = template.body.replace("{@link}", "http://app.reqter.com/verify/" + data._id);
+    console.log(template.body);
 }
