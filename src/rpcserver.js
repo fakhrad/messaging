@@ -183,7 +183,7 @@ function whenConnected() {
                   console.log("Admin user result finished. checking result : " + JSON.stringify(result));
                   if (result.success)
                   {
-                    msgController.sendEmailByTemplate('5cffc3487e01a5006b9937f6', result.data, (emailResult)=>{
+                    msgController.sendEmailByTemplate('5cffc3487e01a5006b9937f6', result.data, result.data, undefined, (emailResult)=>{
                       
                     });
                   }
