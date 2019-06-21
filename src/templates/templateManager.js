@@ -42,4 +42,5 @@ exports.bind = (text, data, user, space)=>{
     text = text.replace("{@appName}", "Reqter");
     text = text.replace("{@link}", "http://app.reqter.com/verify/" + data._id);
     console.log(text);
+    return text;
 }
