@@ -5,7 +5,7 @@ var api = Kavenegar.KavenegarApi({
     "6B62613648303131747448786E324C7531744E4D2F682B7A2F504F797A4F4450"
 });
 exports.sendVerifyCode = (phoneNumber, code, clientId, callback) => {
-  if (clientId) template = process.env[clientId] || "verify";
+  if (clientId) template = process.env[clientId] || "loanverify";
   var message = {
     receptor: phoneNumber,
     token: code,

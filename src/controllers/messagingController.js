@@ -6,7 +6,7 @@ exports.sendVerfiyCode = (phoneNumber, code, clientId, cb) => {
   const service = provider.getsmsservice();
   if (service != undefined) {
     console.log("cote to client : ", code);
-    service.sendMessage(phoneNumber, code, clientId, function(
+    service.sendVerifyCode(phoneNumber, code, clientId, function(
       status,
       response
     ) {
