@@ -1,22 +1,24 @@
-var amqp = require('amqplib/callback_api');
-const msgController = require('./controllers/messagingController');
-const adminController = require('./controllers/adminController');
-const spaceController = require('./controllers/spaceController');
-const AdminUsers = require('./models/adminuser');
+var amqp = require("amqplib/callback_api");
+const msgController = require("./controllers/messagingController");
+const adminController = require("./controllers/adminController");
+const spaceController = require("./controllers/spaceController");
+const AdminUsers = require("./models/adminuser");
 
-var db = require('./db/init-db');
+var db = require("./db/init-db");
 
-var rabbitHost = process.env.RABBITMQ_HOST || "amqp://gvgeetrh:6SyWQAxDCpcdg1S0Dc-Up0sUxfmBUVZU@chimpanzee.rmq.cloudamqp.com/gvgeetrh";
+var rabbitHost =
+  process.env.RABBITMQ_HOST ||
+  "amqp://gvgeetrh:6SyWQAxDCpcdg1S0Dc-Up0sUxfmBUVZU@chimpanzee.rmq.cloudamqp.com/gvgeetrh";
 //var rabbitHost = process.env.RABBITMQ_HOST || "amqp://localhost:5672";
 
 var amqpConn = null;
 function start() {
-    console.log('Start connecting : ' + process.env.RABBITMQ_HOST );;
-  amqp.connect(rabbitHost, (err, conn)=>{
+  console.log("Start connecting : " + process.env.RABBITMQ_HOST);
+  amqp.connect(rabbitHost, (err, conn) => {
     if (err) {
-        console.error("[AMQP]", err.message);
-        return setTimeout(start, 1000);
-      }
+      console.error("[AMQP]", err.message);
+      return setTimeout(start, 1000);
+    }
     conn.on("error", function(err) {
       if (err.message !== "Connection closing") {
         console.error("[AMQP] conn error", err.message);
@@ -34,194 +36,235 @@ function start() {
   });
 }
 function whenConnected() {
-    amqpConn.createChannel( (err, ch) => {
-        if (err) {
-            console.error("[AMQP]", err.message);
-            //return setTimeout(start, 1000);
-        }
-        ch.on("error", function(err) {
-        console.error("[AMQP] channel error", err.message);
-        });
-        ch.on("close", function() {
-        console.log("[AMQP] channel closed");
-        });
-        console.log('Client connected.');
-        this.channel = ch;
+  amqpConn.createChannel((err, ch) => {
+    if (err) {
+      console.error("[AMQP]", err.message);
+      //return setTimeout(start, 1000);
+    }
+    ch.on("error", function(err) {
+      console.error("[AMQP] channel error", err.message);
+    });
+    ch.on("close", function() {
+      console.log("[AMQP] channel closed");
+    });
+    console.log("Client connected.");
+    this.channel = ch;
 
-        ch.prefetch(1);
-        console.log('Messaging service broker started!');
+    ch.prefetch(1);
+    console.log("Messaging service broker started!");
 
-      //SendMessage API
-      ch.assertQueue("sendMessage", {durable: false}, (err, q)=>{
-        ch.consume(q.queue, function reply(msg) {
-            var req = JSON.parse(msg.content.toString('utf8'));
-            try{
-                msgController.sendMessage(req.body.phoneNumber, req.body.message, (result)=>{
-                  console.log(result);
-                  ch.sendToQueue(msg.properties.replyTo, new Buffer.from(JSON.stringify(result)), { correlationId: msg.properties.correlationId } );
-                  ch.ack(msg);
-              });
-            }
-            catch(ex)
-            {
-              console.log(ex);
-              ch.sendToQueue(msg.properties.replyTo, new Buffer.from(JSON.stringify(ex)), { correlationId: msg.properties.correlationId } );
-                  ch.ack(msg);
-            } 
-
-        });
-      });
     //SendMessage API
-    ch.assertQueue("sendVerifyCode", {durable: false}, (err, q)=>{
+    ch.assertQueue("sendMessage", { durable: false }, (err, q) => {
       ch.consume(q.queue, function reply(msg) {
-          var req = JSON.parse(msg.content.toString('utf8'));
-          try{
-                  msgController.sendMessage(req.body.phoneNumber, req.body.code, (result)=>{
-                    if (!result.success)
-                      console.log(result);
-                    ch.sendToQueue(msg.properties.replyTo, new Buffer.from(JSON.stringify(result)), { correlationId: msg.properties.correlationId } );
-                    ch.ack(msg);
-              });
-          }
-          catch(ex)
-          {
-            console.log(ex);
-            ch.sendToQueue(msg.properties.replyTo, new Buffer.from(JSON.stringify(ex)), { correlationId: msg.properties.correlationId } );
-                ch.ack(msg);
-          } 
-
+        var req = JSON.parse(msg.content.toString("utf8"));
+        try {
+          msgController.sendMessage(
+            req.body.phoneNumber,
+            req.body.message,
+            result => {
+              console.log(result);
+              ch.sendToQueue(
+                msg.properties.replyTo,
+                new Buffer.from(JSON.stringify(result)),
+                { correlationId: msg.properties.correlationId }
+              );
+              ch.ack(msg);
+            }
+          );
+        } catch (ex) {
+          console.log(ex);
+          ch.sendToQueue(
+            msg.properties.replyTo,
+            new Buffer.from(JSON.stringify(ex)),
+            { correlationId: msg.properties.correlationId }
+          );
+          ch.ack(msg);
+        }
+      });
+    });
+    //SendMessage API
+    ch.assertQueue("sendVerifyCode", { durable: false }, (err, q) => {
+      ch.consume(q.queue, function reply(msg) {
+        var req = JSON.parse(msg.content.toString("utf8"));
+        try {
+          msgController.sendVerfiyCode(
+            req.body.phoneNumber,
+            req.body.code,
+            req.body.clientId,
+            result => {
+              if (!result.success) console.log(result);
+              ch.sendToQueue(
+                msg.properties.replyTo,
+                new Buffer.from(JSON.stringify(result)),
+                { correlationId: msg.properties.correlationId }
+              );
+              ch.ack(msg);
+            }
+          );
+        } catch (ex) {
+          console.log(ex);
+          ch.sendToQueue(
+            msg.properties.replyTo,
+            new Buffer.from(JSON.stringify(ex)),
+            { correlationId: msg.properties.correlationId }
+          );
+          ch.ack(msg);
+        }
       });
     });
     //Send Email Message API
-    ch.assertQueue("sendEmailMessage", {durable: false}, (err, q)=>{
+    ch.assertQueue("sendEmailMessage", { durable: false }, (err, q) => {
       ch.consume(q.queue, function reply(msg) {
-          var req = JSON.parse(msg.content.toString('utf8'));
-          try{
-            msgController.sendEmailMessage(req.body.message, (result)=>{
-              console.log(result);
-              ch.sendToQueue(msg.properties.replyTo, new Buffer.from(JSON.stringify(result)), { correlationId: msg.properties.correlationId } );
-              ch.ack(msg);
+        var req = JSON.parse(msg.content.toString("utf8"));
+        try {
+          msgController.sendEmailMessage(req.body.message, result => {
+            console.log(result);
+            ch.sendToQueue(
+              msg.properties.replyTo,
+              new Buffer.from(JSON.stringify(result)),
+              { correlationId: msg.properties.correlationId }
+            );
+            ch.ack(msg);
           });
-          }
-          catch(ex)
-          {
-            console.log(ex);
-            ch.sendToQueue(msg.properties.replyTo, new Buffer.from(JSON.stringify(ex)), { correlationId: msg.properties.correlationId } );
-                ch.ack(msg);
-          } 
-
+        } catch (ex) {
+          console.log(ex);
+          ch.sendToQueue(
+            msg.properties.replyTo,
+            new Buffer.from(JSON.stringify(ex)),
+            { correlationId: msg.properties.correlationId }
+          );
+          ch.ack(msg);
+        }
       });
     });
     //SendPushMessge API
-    ch.assertQueue("sendPushMessage", {durable: false}, (err, q)=>{
+    ch.assertQueue("sendPushMessage", { durable: false }, (err, q) => {
       ch.consume(q.queue, function reply(msg) {
-          var req = JSON.parse(msg.content.toString('utf8'));
-          try{
-            msgController.sendPushMessage(req.body.device, req.body.message, req.body.data, (result)=>{
-              ch.sendToQueue(msg.properties.replyTo, new Buffer.from(JSON.stringify(result)), { correlationId: msg.properties.correlationId } );
+        var req = JSON.parse(msg.content.toString("utf8"));
+        try {
+          msgController.sendPushMessage(
+            req.body.device,
+            req.body.message,
+            req.body.data,
+            result => {
+              ch.sendToQueue(
+                msg.properties.replyTo,
+                new Buffer.from(JSON.stringify(result)),
+                { correlationId: msg.properties.correlationId }
+              );
               ch.ack(msg);
-          });
-          }
-          catch(ex)
-          {
-            console.log(ex);
-            ch.sendToQueue(msg.properties.replyTo, new Buffer.from(JSON.stringify(ex)), { correlationId: msg.properties.correlationId } );
-                ch.ack(msg);
-          } 
-
+            }
+          );
+        } catch (ex) {
+          console.log(ex);
+          ch.sendToQueue(
+            msg.properties.replyTo,
+            new Buffer.from(JSON.stringify(ex)),
+            { correlationId: msg.properties.correlationId }
+          );
+          ch.ack(msg);
+        }
       });
     });
 
-       //Exchanges
-       var exchange = 'messaging';
+    //Exchanges
+    var exchange = "messaging";
 
-       ch.assertExchange(exchange, 'direct', {
-         durable: false
-       });
+    ch.assertExchange(exchange, "direct", {
+      durable: false
+    });
 
-       ch.assertExchange("contentservice", 'direct', {
-        durable: false
-       });
+    ch.assertExchange("contentservice", "direct", {
+      durable: false
+    });
 
-       ch.assertExchange("adminauth", 'direct', {
-         durable: false
-       });
- 
-       ch.assertQueue("", {durable: false, exclusive : true}, (err, q)=>{
-        if (!err)
-        {
-          ch.bindQueue(q.queue, "adminauth", "admintokencreated")
-          ch.consume(q.queue, function(msg) {
+    ch.assertExchange("adminauth", "direct", {
+      durable: false
+    });
+
+    ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
+      if (!err) {
+        ch.bindQueue(q.queue, "adminauth", "admintokencreated");
+        ch.consume(
+          q.queue,
+          function(msg) {
             // console.log(msg);
-            var req = JSON.parse(msg.content.toString('utf8'));
+            var req = JSON.parse(msg.content.toString("utf8"));
             console.log("Admin user token created. adding tokens");
-            try
-            {
-               adminController.savetoken(req, ()=>{});
-            }
-            catch(ex)
-            {
+            try {
+              adminController.savetoken(req, () => {});
+            } catch (ex) {
               console.log(ex);
             }
-          }, {
+          },
+          {
             noAck: true
-          });
-        }
-       });
+          }
+        );
+      }
+    });
 
-       ch.assertQueue("", {durable: false, exclusive : true}, (err, q)=>{
-         if (!err)
-         {
-           ch.bindQueue(q.queue, "adminauth", "adminuserregistered")
-           ch.consume(q.queue, function(msg) {
-             // console.log(msg);
-             var req = JSON.parse(msg.content.toString('utf8'));
-             console.log("Admin user registered. adding to local database and sending activation email");
-             try
-             {
-                adminController.registeruser(req, (result)=>{
-                  console.log("Admin user result finished. checking result : " + JSON.stringify(result));
-                  if (result.success)
-                  {
-                    msgController.sendEmailByTemplate('5cffc3487e01a5006b9937f6', result.data, result.data, undefined, (emailResult)=>{
-                      
-                    });
-                  }
-                });
-             }
-             catch(ex)
-             {
-               console.log(ex);
-             }
-           }, {
-             noAck: true
-           });
-         }
-       });
- 
-       ch.assertQueue("", {durable: false, exclusive : true}, (err, q)=>{
-        if (!err)
-        {
-          ch.bindQueue(q.queue, "contentservice", "spacecreated")
-          ch.consume(q.queue, function(msg) {
+    ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
+      if (!err) {
+        ch.bindQueue(q.queue, "adminauth", "adminuserregistered");
+        ch.consume(
+          q.queue,
+          function(msg) {
             // console.log(msg);
-            var req = JSON.parse(msg.content.toString('utf8'));
-            console.log("New space created. adding to local database",);
-            try
-            {
-                spaceController.createuserspace(req, (result)=> {});
+            var req = JSON.parse(msg.content.toString("utf8"));
+            console.log(
+              "Admin user registered. adding to local database and sending activation email"
+            );
+            try {
+              adminController.registeruser(req, result => {
+                console.log(
+                  "Admin user result finished. checking result : " +
+                    JSON.stringify(result)
+                );
+                if (result.success) {
+                  msgController.sendEmailByTemplate(
+                    "5cffc3487e01a5006b9937f6",
+                    result.data,
+                    result.data,
+                    undefined,
+                    emailResult => {}
+                  );
+                }
+              });
+            } catch (ex) {
+              console.log(ex);
             }
-            catch(ex)
-            {
-                console.log(ex);
-            }
-          }, {
+          },
+          {
             noAck: true
-          });
-        }
+          }
+        );
+      }
     });
+
+    ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
+      if (!err) {
+        ch.bindQueue(q.queue, "contentservice", "spacecreated");
+        ch.consume(
+          q.queue,
+          function(msg) {
+            // console.log(msg);
+            var req = JSON.parse(msg.content.toString("utf8"));
+            console.log("New space created. adding to local database");
+            try {
+              spaceController.createuserspace(req, result => {});
+            } catch (ex) {
+              console.log(ex);
+            }
+          },
+          {
+            noAck: true
+          }
+        );
+      }
     });
-  };
+  });
+}
 start();
 
 db();

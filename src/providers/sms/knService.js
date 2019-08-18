@@ -11,6 +11,7 @@ exports.sendVerifyCode = (phoneNumber, code, clientId, callback) => {
     token: code,
     template: template
   };
+  console.log(message);
   api.VerifyLookup(message, function(response, status) {
     if (status == 200) {
       callback(status, response);
