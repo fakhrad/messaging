@@ -6,8 +6,8 @@ var api = Kavenegar.KavenegarApi({
 });
 exports.sendVerifyCode = (phoneNumber, code, clientId, callback) => {
   var template = "loanverify";
-  console.log(clientId + ":" + process.env[`${clientId}`]);
-  if (clientId) template = process.env[`${clientId}`];
+  //console.log(clientId + ":" + process.env[clientId]);
+  if (clientId) template = "sms" + clientId;
   var message = {
     receptor: phoneNumber,
     token: code,
