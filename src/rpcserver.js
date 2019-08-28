@@ -280,15 +280,7 @@ function whenConnected() {
                   subject: "New response submitted",
                   text: "شما یک درخواست جدید دارید."
                 },
-                result => {
-                  console.log(result);
-                  ch.sendToQueue(
-                    msg.properties.replyTo,
-                    new Buffer.from(JSON.stringify(result)),
-                    { correlationId: msg.properties.correlationId }
-                  );
-                  ch.ack(msg);
-                }
+                () => {}
               );
             } catch (ex) {
               console.log(ex);
