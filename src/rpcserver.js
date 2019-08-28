@@ -276,9 +276,9 @@ function whenConnected() {
               msgController.sendEmailMessage(
                 {
                   to: "startupspaceservice@gmail.com",
-                  from: "Message Center",
+                  from: "admin@startupspace.ir",
                   subject: "New response submitted",
-                  text: JSON.stringify(req)
+                  text: "شما یک درخواست جدید دارید."
                 },
                 result => {
                   console.log(result);
