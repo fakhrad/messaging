@@ -263,6 +263,43 @@ function whenConnected() {
         );
       }
     });
+    ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
+      if (!err) {
+        ch.bindQueue(q.queue, "contentservice", "contentsubmitted");
+        ch.consume(
+          q.queue,
+          function(msg) {
+            // console.log(msg);
+            var req = JSON.parse(msg.content.toString("utf8"));
+            console.log("New content submitted. doing some actions");
+            try {
+              msgController.sendEmailMessage(
+                {
+                  to: "startupspaceservice@gmail.com",
+                  from: "Message Center",
+                  subject: "New response submitted",
+                  text: JSON.stringify(req)
+                },
+                result => {
+                  console.log(result);
+                  ch.sendToQueue(
+                    msg.properties.replyTo,
+                    new Buffer.from(JSON.stringify(result)),
+                    { correlationId: msg.properties.correlationId }
+                  );
+                  ch.ack(msg);
+                }
+              );
+            } catch (ex) {
+              console.log(ex);
+            }
+          },
+          {
+            noAck: true
+          }
+        );
+      }
+    });
   });
 }
 start();
