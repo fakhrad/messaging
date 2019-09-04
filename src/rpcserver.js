@@ -296,7 +296,12 @@ function whenConnected() {
                           process.env.REQTER_NOTIFICATION_EMAIL ||
                           "noreply@reqter.com",
                         subject: req.body.data.fields.name,
-                        text: url + "/contents/view/" + req.body.data._id
+                        text:
+                          url +
+                          "/contents/view/" +
+                          req.body.data._id +
+                          "\r\n" +
+                          results.space.toString()
                       },
                       () => {}
                     );
