@@ -286,8 +286,7 @@ function whenConnected() {
                 (err, results) => {
                   console.log(results);
                   if (results.space) {
-                    var url =
-                      process.env.REQTER_URL || "https://caaser.herokuapp.com";
+                    var url = "https://caaser.herokuapp.com";
                     msgController.sendEmailMessage(
                       {
                         to:
@@ -297,11 +296,7 @@ function whenConnected() {
                           process.env.REQTER_NOTIFICATION_EMAIL ||
                           "noreply@reqter.com",
                         subject: req.body.data.fields.name,
-                        text:
-                          "شما یک درخواست جدید دارید.\r\n" +
-                          +url +
-                          "/contents/view/" +
-                          req.body.data._id
+                        text: url + "/contents/view/" + req.body.data._id
                       },
                       () => {}
                     );
@@ -313,11 +308,7 @@ function whenConnected() {
                           process.env.REQTER_NOTIFICATION_EMAIL ||
                           "noreply@reqter.com",
                         subject: req.body.data.fields.name,
-                        text:
-                          "شما یک درخواست جدید دارید.\r\n" +
-                          +url +
-                          "/contents/view/" +
-                          req.body.data._id
+                        text: url + "/contents/view/" + req.body.data._id
                       },
                       () => {}
                     );
