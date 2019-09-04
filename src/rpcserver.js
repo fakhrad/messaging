@@ -288,16 +288,14 @@ function whenConnected() {
                   if (results.space) {
                     msgController.sendEmailMessage(
                       {
-                        to:
-                          results.space.notification_email ||
-                          "info.reqter@gmail.com",
+                        to: results.space.notification_email,
                         from:
                           process.env.REQTER_NOTIFICATION_EMAIL ||
                           "noreply@reqter.com",
                         subject: req.body.data.fields.name,
                         text:
                           "شما یک درخواست جدید دارید.\r\n" +
-                          +JSON.stringify(req.body.data.fields)
+                          +msg.content.toString("utf8")
                       },
                       () => {}
                     );
