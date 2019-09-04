@@ -277,49 +277,41 @@ function whenConnected() {
               "New content submitted." + msg.content.toString("utf8")
             );
             try {
-              async.parallel(
-                {
-                  space: function(callback) {
-                    Spaces.findById(req.body.data.sys.spaceId).exec(callback);
-                  }
-                },
-                (err, results) => {
-                  console.log(results);
-                  var email = results.space.notification_email;
+              Spaces.findById(req.body.data.sys.spaceId).exec((err, space) => {
+                if (space) {
+                  var email = space.notification_email;
                   console.log(email);
-                  if (results.space) {
-                    var url = "https://caaser.herokuapp.com";
-                    msgController.sendEmailMessage(
-                      {
-                        to: email || "info.reqter@gmail.com",
-                        from:
-                          process.env.REQTER_NOTIFICATION_EMAIL ||
-                          "noreply@reqter.com",
-                        subject: req.body.data.fields.name,
-                        text:
-                          url +
-                          "/contents/view/" +
-                          req.body.data._id +
-                          "\n" +
-                          results.space.toString()
-                      },
-                      () => {}
-                    );
-                  } else {
-                    msgController.sendEmailMessage(
-                      {
-                        to: "info.reqter@gmail.com",
-                        from:
-                          process.env.REQTER_NOTIFICATION_EMAIL ||
-                          "noreply@reqter.com",
-                        subject: req.body.data.fields.name,
-                        text: url + "/contents/view/" + req.body.data._id
-                      },
-                      () => {}
-                    );
-                  }
+                  var url = "https://caaser.herokuapp.com";
+                  msgController.sendEmailMessage(
+                    {
+                      to: email || "info.reqter@gmail.com",
+                      from:
+                        process.env.REQTER_NOTIFICATION_EMAIL ||
+                        "noreply@reqter.com",
+                      subject: req.body.data.fields.name,
+                      text:
+                        url +
+                        "/contents/view/" +
+                        req.body.data._id +
+                        "\n" +
+                        space._id
+                    },
+                    () => {}
+                  );
+                } else {
+                  msgController.sendEmailMessage(
+                    {
+                      to: "info.reqter@gmail.com",
+                      from:
+                        process.env.REQTER_NOTIFICATION_EMAIL ||
+                        "noreply@reqter.com",
+                      subject: req.body.data.fields.name,
+                      text: url + "/contents/view/" + req.body.data._id
+                    },
+                    () => {}
+                  );
                 }
-              );
+              });
             } catch (ex) {
               console.log(ex);
             }
