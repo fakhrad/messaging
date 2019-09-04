@@ -281,11 +281,6 @@ function whenConnected() {
                 {
                   space: function(callback) {
                     Spaces.findById(req.body.data.sys.spaceId).exec(callback);
-                  },
-                  ctype: function(callback) {
-                    ContentTypes.findById(req.body.data.contentType).exec(
-                      callback
-                    );
                   }
                 },
                 (err, results) => {
@@ -302,9 +297,7 @@ function whenConnected() {
                         subject: req.body.data.fields.name,
                         text:
                           "شما یک درخواست جدید دارید.\r\n" +
-                          "نوع : " +
-                          results.ctype.title.fa +
-                          JSON.stringify(req.data.fields)
+                          +JSON.stringify(req.data.fields)
                       },
                       () => {}
                     );
