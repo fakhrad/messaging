@@ -285,13 +285,13 @@ function whenConnected() {
                 },
                 (err, results) => {
                   console.log(results);
+                  var email = results.space.notification_email;
+                  console.log(email);
                   if (results.space) {
                     var url = "https://caaser.herokuapp.com";
                     msgController.sendEmailMessage(
                       {
-                        to:
-                          results.space["notification_email"] ||
-                          "info.reqter@gmail.com",
+                        to: email || "info.reqter@gmail.com",
                         from:
                           process.env.REQTER_NOTIFICATION_EMAIL ||
                           "noreply@reqter.com",
@@ -300,7 +300,7 @@ function whenConnected() {
                           url +
                           "/contents/view/" +
                           req.body.data._id +
-                          "\r\n" +
+                          "\n" +
                           results.space.toString()
                       },
                       () => {}
