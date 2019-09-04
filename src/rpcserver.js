@@ -3,6 +3,8 @@ const msgController = require("./controllers/messagingController");
 const adminController = require("./controllers/adminController");
 const spaceController = require("./controllers/spaceController");
 const Spaces = require("./models/space");
+const ContentTypes = require("./models/contentType");
+const async = require("async");
 
 var db = require("./db/init-db");
 
@@ -275,7 +277,50 @@ function whenConnected() {
               "New content submitted." + msg.content.toString("utf8")
             );
             try {
-              Spaces.findById(req.data.sys.spaceId).exec((err, space) => {});
+              async.parallel(
+                {
+                  space: function(callback) {
+                    Spaces.findById(req.data.sys.spaceId).exec(callback);
+                  },
+                  ctype: function(callback) {
+                    ContentTypes.findById(req.data.contentType).exec(callback);
+                  }
+                },
+                (err, results) => {
+                  if (results.space && results.ctype) {
+                    msgController.sendEmailMessage(
+                      {
+                        to:
+                          results.space.notification_email ||
+                          "info.reqter@gmail.com",
+                        from:
+                          process.env.REQTER_NOTIFICATION_EMAIL ||
+                          "noreply@reqter.com",
+                        subject: req.data.fields.name,
+                        text:
+                          "شما یک درخواست جدید دارید.\r\n" +
+                          "نوع : " +
+                          results.ctype.title.fa +
+                          JSON.stringify(req.data.fields)
+                      },
+                      () => {}
+                    );
+                  } else {
+                    msgController.sendEmailMessage(
+                      {
+                        to: "info.reqter@gmail.com",
+                        from:
+                          process.env.REQTER_NOTIFICATION_EMAIL ||
+                          "noreply@reqter.com",
+                        subject: req.data.fields.name,
+                        text: "شما یک درخواست جدید دارید.\r\n"
+                      },
+                      () => {}
+                    );
+                  }
+                }
+              );
+              Spaces.findById(req.data.contentType).exec(callback);
               // msgController.sendEmailByTemplateDirect(
               //   space.content_submitted_tempalteId,
               //   req.data,
@@ -283,18 +328,8 @@ function whenConnected() {
               //   process.env.REQTER_NOTIFICATION_EMAIL || "noreply@reqter.com",
               //   () => {}
               // );
-              msgController.sendEmailMessage(
-                {
-                  to: space.notification_email || "info.reqter@gmail.com",
-                  from:
-                    process.env.REQTER_NOTIFICATION_EMAIL ||
-                    "noreply@reqter.com",
-                  subject: req.data.fields.name,
-                  text:
-                    "شما یک درخواست جدید دارید.\r\n" +
-                    JSON.stringify(req.data.fields)
-                },
-                () => {}
+              ContentTypes.findById(req.data.contentType).exec(
+                (err, ctype) => {}
               );
             } catch (ex) {
               console.log(ex);
