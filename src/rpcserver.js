@@ -286,6 +286,7 @@ function whenConnected() {
                     {
                       to: email || "info.reqter@gmail.com",
                       from:
+                        space.name ||
                         process.env.REQTER_NOTIFICATION_EMAIL ||
                         "noreply@reqter.com",
                       subject: req.body.data.fields.name,
@@ -303,6 +304,7 @@ function whenConnected() {
                     {
                       to: "info.reqter@gmail.com",
                       from:
+                        space.name ||
                         process.env.REQTER_NOTIFICATION_EMAIL ||
                         "noreply@reqter.com",
                       subject: req.body.data.fields.name,
