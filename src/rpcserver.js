@@ -285,7 +285,7 @@ function whenConnected() {
               // );
               msgController.sendEmailMessage(
                 {
-                  to: space.notificationEmail || "info.reqter@gmail.com",
+                  to: space.notification_email || "info.reqter@gmail.com",
                   from:
                     process.env.REQTER_NOTIFICATION_EMAIL ||
                     "noreply@reqter.com",
