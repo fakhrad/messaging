@@ -297,7 +297,7 @@ function whenConnected() {
                         subject: req.body.data.fields.name,
                         text:
                           "شما یک درخواست جدید دارید.\r\n" +
-                          +JSON.stringify(req.data.fields)
+                          +JSON.stringify(req.body.data.fields)
                       },
                       () => {}
                     );
