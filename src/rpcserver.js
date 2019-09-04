@@ -289,7 +289,7 @@ function whenConnected() {
                     msgController.sendEmailMessage(
                       {
                         to:
-                          results.space["notification_email"].toString() ||
+                          results.space["notification_email"] ||
                           "info.reqter@gmail.com",
                         from:
                           process.env.REQTER_NOTIFICATION_EMAIL ||
@@ -297,8 +297,8 @@ function whenConnected() {
                         subject: req.body.data.fields.name,
                         text:
                           "شما یک درخواست جدید دارید.\r\n" +
-                          +req.body.data.fields.name +
-                          "\r\n" +
+                          +process.env.REQTER_URL +
+                          "/contents/view/" +
                           req.body.data._id
                       },
                       () => {}
@@ -311,7 +311,11 @@ function whenConnected() {
                           process.env.REQTER_NOTIFICATION_EMAIL ||
                           "noreply@reqter.com",
                         subject: req.body.data.fields.name,
-                        text: "شما یک درخواست جدید دارید.\r\n"
+                        text:
+                          "شما یک درخواست جدید دارید.\r\n" +
+                          +process.env.REQTER_URL +
+                          "/contents/view/" +
+                          req.body.data._id
                       },
                       () => {}
                     );
