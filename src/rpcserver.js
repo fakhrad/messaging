@@ -280,10 +280,12 @@ function whenConnected() {
               async.parallel(
                 {
                   space: function(callback) {
-                    Spaces.findById(req.data.sys.spaceId).exec(callback);
+                    Spaces.findById(req.body.data.sys.spaceId).exec(callback);
                   },
                   ctype: function(callback) {
-                    ContentTypes.findById(req.data.contentType).exec(callback);
+                    ContentTypes.findById(req.body.data.contentType).exec(
+                      callback
+                    );
                   }
                 },
                 (err, results) => {
@@ -296,7 +298,7 @@ function whenConnected() {
                         from:
                           process.env.REQTER_NOTIFICATION_EMAIL ||
                           "noreply@reqter.com",
-                        subject: req.data.fields.name,
+                        subject: req.body.data.fields.name,
                         text:
                           "شما یک درخواست جدید دارید.\r\n" +
                           "نوع : " +
@@ -312,24 +314,13 @@ function whenConnected() {
                         from:
                           process.env.REQTER_NOTIFICATION_EMAIL ||
                           "noreply@reqter.com",
-                        subject: req.data.fields.name,
+                        subject: req.body.data.fields.name,
                         text: "شما یک درخواست جدید دارید.\r\n"
                       },
                       () => {}
                     );
                   }
                 }
-              );
-              Spaces.findById(req.data.contentType).exec(callback);
-              // msgController.sendEmailByTemplateDirect(
-              //   space.content_submitted_tempalteId,
-              //   req.data,
-              //   space.content_notificationEmail,
-              //   process.env.REQTER_NOTIFICATION_EMAIL || "noreply@reqter.com",
-              //   () => {}
-              // );
-              ContentTypes.findById(req.data.contentType).exec(
-                (err, ctype) => {}
               );
             } catch (ex) {
               console.log(ex);
