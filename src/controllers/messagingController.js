@@ -87,6 +87,36 @@ var sendEmailMessage = (message, cb) => {
 };
 exports.sendEmailMessage = sendEmailMessage;
 
+exports.sendEmailByTemplateDirect = (
+  templateId,
+  data,
+  reciever,
+  sender,
+  cb
+) => {
+  templateManager.getTemplateById(templateId, result => {
+    if (result.success) {
+      var template = result.data;
+      console.log(JSON.stringify(data));
+      template.body.fa = templateManager.bind(
+        template.body.fa,
+        data,
+        user,
+        space
+      );
+      var message = {
+        to: reciever,
+        from: sender,
+        subject: template.title.fa,
+        text: template.isHtml ? undefined : template.body.fa,
+        html: template.isHtml ? template.body.fa : undefined
+      };
+      console.log(JSON.stringify(message));
+
+      sendEmailMessage(message, cb);
+    }
+  });
+};
 exports.sendEmailByTemplate = (templateId, data, user, space, cb) => {
   templateManager.getTemplateById(templateId, result => {
     if (result.success) {

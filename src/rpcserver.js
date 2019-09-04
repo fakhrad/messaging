@@ -2,7 +2,7 @@ var amqp = require("amqplib/callback_api");
 const msgController = require("./controllers/messagingController");
 const adminController = require("./controllers/adminController");
 const spaceController = require("./controllers/spaceController");
-const AdminUsers = require("./models/adminuser");
+const Spaces = require("./models/space");
 
 var db = require("./db/init-db");
 
@@ -271,14 +271,28 @@ function whenConnected() {
           function(msg) {
             // console.log(msg);
             var req = JSON.parse(msg.content.toString("utf8"));
-            console.log("New content submitted. doing some actions");
+            console.log(
+              "New content submitted." + msg.content.toString("utf8")
+            );
             try {
+              Spaces.findById(req.data.sys.spaceId).exec((err, space) => {});
+              // msgController.sendEmailByTemplateDirect(
+              //   space.content_submitted_tempalteId,
+              //   req.data,
+              //   space.content_notificationEmail,
+              //   process.env.REQTER_NOTIFICATION_EMAIL || "noreply@reqter.com",
+              //   () => {}
+              // );
               msgController.sendEmailMessage(
                 {
-                  to: "startupspaceservice@gmail.com",
-                  from: "admin@startupspace.ir",
-                  subject: "New response submitted",
-                  text: "شما یک درخواست جدید دارید."
+                  to: space.notificationEmail,
+                  from:
+                    process.env.REQTER_NOTIFICATION_EMAIL ||
+                    "noreply@reqter.com",
+                  subject: req.data.fields.name,
+                  text:
+                    "شما یک درخواست جدید دارید.\r\n" +
+                    JSON.stringify(req.data.fields)
                 },
                 () => {}
               );
