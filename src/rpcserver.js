@@ -289,6 +289,7 @@ function whenConnected() {
                   }
                 },
                 (err, results) => {
+                  console.log(results);
                   if (results.space && results.ctype) {
                     msgController.sendEmailMessage(
                       {
