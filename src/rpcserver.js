@@ -288,7 +288,9 @@ function whenConnected() {
                       from:
                         process.env.REQTER_NOTIFICATION_EMAIL ||
                         "noreply@reqter.com",
-                      subject: req.body.data.fields.name,
+                      subject:
+                        req.body.data.fields.name.fa ||
+                        req.body.data.fields.name,
                       text: url + "/contentview/" + req.body.data.sys.link
                     },
                     () => {}
@@ -300,7 +302,9 @@ function whenConnected() {
                       from:
                         process.env.REQTER_NOTIFICATION_EMAIL ||
                         "noreply@reqter.com",
-                      subject: req.body.data.fields.name,
+                      subject:
+                        req.body.data.fields.name.fa ||
+                        req.body.data.fields.name,
                       text: url + "/contentview/" + req.body.data.sys.link
                     },
                     () => {}
