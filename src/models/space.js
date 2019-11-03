@@ -25,7 +25,10 @@ space.methods.viewModel = function(cb) {
     id: this._id,
     roles: this.roles,
     locales: this.locales,
-    name: this.name
+    name: this.name,
+    description: this.description,
+    webhooks: this.webhooks,
+    notification_email: this.notification_email
   };
 };
 module.exports = mongoose.model("Space", space);

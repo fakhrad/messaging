@@ -184,87 +184,87 @@ function whenConnected() {
       durable: false
     });
 
-    ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
-      if (!err) {
-        ch.bindQueue(q.queue, "adminauth", "admintokencreated");
-        ch.consume(
-          q.queue,
-          function(msg) {
-            // console.log(msg);
-            var req = JSON.parse(msg.content.toString("utf8"));
-            console.log("Admin user token created. adding tokens");
-            try {
-              adminController.savetoken(req, () => {});
-            } catch (ex) {
-              console.log(ex);
-            }
-          },
-          {
-            noAck: true
-          }
-        );
-      }
-    });
+    // ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
+    //   if (!err) {
+    //     ch.bindQueue(q.queue, "adminauth", "admintokencreated");
+    //     ch.consume(
+    //       q.queue,
+    //       function(msg) {
+    //         // console.log(msg);
+    //         var req = JSON.parse(msg.content.toString("utf8"));
+    //         console.log("Admin user token created. adding tokens");
+    //         try {
+    //           adminController.savetoken(req, () => {});
+    //         } catch (ex) {
+    //           console.log(ex);
+    //         }
+    //       },
+    //       {
+    //         noAck: true
+    //       }
+    //     );
+    //   }
+    // });
 
-    ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
-      if (!err) {
-        ch.bindQueue(q.queue, "adminauth", "adminuserregistered");
-        ch.consume(
-          q.queue,
-          function(msg) {
-            // console.log(msg);
-            var req = JSON.parse(msg.content.toString("utf8"));
-            console.log(
-              "Admin user registered. adding to local database and sending activation email"
-            );
-            try {
-              adminController.registeruser(req, result => {
-                console.log(
-                  "Admin user result finished. checking result : " +
-                    JSON.stringify(result)
-                );
-                if (result.success) {
-                  msgController.sendEmailByTemplate(
-                    "5cffc3487e01a5006b9937f6",
-                    result.data,
-                    result.data,
-                    undefined,
-                    emailResult => {}
-                  );
-                }
-              });
-            } catch (ex) {
-              console.log(ex);
-            }
-          },
-          {
-            noAck: true
-          }
-        );
-      }
-    });
+    // ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
+    //   if (!err) {
+    //     ch.bindQueue(q.queue, "adminauth", "adminuserregistered");
+    //     ch.consume(
+    //       q.queue,
+    //       function(msg) {
+    //         // console.log(msg);
+    //         var req = JSON.parse(msg.content.toString("utf8"));
+    //         console.log(
+    //           "Admin user registered. adding to local database and sending activation email"
+    //         );
+    //         try {
+    //           adminController.registeruser(req, result => {
+    //             console.log(
+    //               "Admin user result finished. checking result : " +
+    //                 JSON.stringify(result)
+    //             );
+    //             if (result.success) {
+    //               msgController.sendEmailByTemplate(
+    //                 "5cffc3487e01a5006b9937f6",
+    //                 result.data,
+    //                 result.data,
+    //                 undefined,
+    //                 emailResult => {}
+    //               );
+    //             }
+    //           });
+    //         } catch (ex) {
+    //           console.log(ex);
+    //         }
+    //       },
+    //       {
+    //         noAck: true
+    //       }
+    //     );
+    //   }
+    // });
 
-    ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
-      if (!err) {
-        ch.bindQueue(q.queue, "contentservice", "spacecreated");
-        ch.consume(
-          q.queue,
-          function(msg) {
-            // console.log(msg);
-            var req = JSON.parse(msg.content.toString("utf8"));
-            console.log("New space created. adding to local database");
-            try {
-              spaceController.createuserspace(req, result => {});
-            } catch (ex) {
-              console.log(ex);
-            }
-          },
-          {
-            noAck: true
-          }
-        );
-      }
-    });
+    // ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
+    //   if (!err) {
+    //     ch.bindQueue(q.queue, "contentservice", "spacecreated");
+    //     ch.consume(
+    //       q.queue,
+    //       function(msg) {
+    //         // console.log(msg);
+    //         var req = JSON.parse(msg.content.toString("utf8"));
+    //         console.log("New space created. adding to local database");
+    //         try {
+    //           spaceController.createuserspace(req, result => {});
+    //         } catch (ex) {
+    //           console.log(ex);
+    //         }
+    //       },
+    //       {
+    //         noAck: true
+    //       }
+    //     );
+    //   }
+    // });
     ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
       if (!err) {
         ch.bindQueue(q.queue, "contentservice", "contentsubmitted");
@@ -277,40 +277,47 @@ function whenConnected() {
               "New content submitted." + msg.content.toString("utf8")
             );
             try {
-              Spaces.findById(req.body.data.sys.spaceId).exec((err, space) => {
-                if (space) {
-                  var email = space.notification_email;
-                  console.log(email);
-                  var url = "https://caaser.herokuapp.com";
-                  msgController.sendEmailMessage(
-                    {
-                      to: email || "info.reqter@gmail.com",
-                      from:
-                        process.env.REQTER_NOTIFICATION_EMAIL ||
-                        "noreply@reqter.com",
-                      subject:
-                        req.body.data.fields.name.fa ||
-                        req.body.data.fields.name,
-                      text: url + "/contentview/" + req.body.data.sys.link
-                    },
-                    () => {}
-                  );
-                } else {
-                  msgController.sendEmailMessage(
-                    {
-                      to: "info.reqter@gmail.com",
-                      from:
-                        process.env.REQTER_NOTIFICATION_EMAIL ||
-                        "noreply@reqter.com",
-                      subject:
-                        req.body.data.fields.name.fa ||
-                        req.body.data.fields.name,
-                      text: url + "/contentview/" + req.body.data.sys.link
-                    },
-                    () => {}
-                  );
-                }
-              });
+              if (
+                req.body.data.fields.phonenumber != "+989197682386" &&
+                req.body.data.fields.phonenumber != "+989333229291"
+              ) {
+                Spaces.findById(req.body.data.sys.spaceId).exec(
+                  (err, space) => {
+                    if (space) {
+                      var email = space.notification_email;
+                      console.log(email);
+                      var url = "https://caaser.herokuapp.com";
+                      msgController.sendEmailMessage(
+                        {
+                          to: email || "info.reqter@gmail.com",
+                          from:
+                            process.env.REQTER_NOTIFICATION_EMAIL ||
+                            "noreply@reqter.com",
+                          subject:
+                            req.body.data.fields.name.fa ||
+                            req.body.data.fields.name,
+                          text: url + "/contentview/" + req.body.data.sys.link
+                        },
+                        () => {}
+                      );
+                    } else {
+                      msgController.sendEmailMessage(
+                        {
+                          to: "info.reqter@gmail.com",
+                          from:
+                            process.env.REQTER_NOTIFICATION_EMAIL ||
+                            "noreply@reqter.com",
+                          subject:
+                            req.body.data.fields.name.fa ||
+                            req.body.data.fields.name,
+                          text: url + "/contentview/" + req.body.data.sys.link
+                        },
+                        () => {}
+                      );
+                    }
+                  }
+                );
+              }
             } catch (ex) {
               console.log(ex);
             }
