@@ -1,10 +1,10 @@
 var admin = require("firebase-admin");
 
-var serviceAccount = require("./exchange-88517-firebase-adminsdk-5rprz-a692961f25.json");
+var serviceAccount = require("./loaner-b5ff1-firebase-adminsdk-kwtu6-a84f5e3fae.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://exchange-api.firebaseio.com"
+  databaseURL: "https://loaner-b5ff1.firebaseio.com"
 });
 
 exports.sendMessage = (device, msg, dataObject, callback) => {
@@ -49,7 +49,7 @@ exports.sendMessage = (device, msg, dataObject, callback) => {
       })
       .catch(error => {
         console.log("Error sending message:", error);
-        callback(400, error);
+        //callback(400, error);
       });
   } catch (e) {
     console.log(e);
