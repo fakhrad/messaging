@@ -294,74 +294,74 @@ function whenConnected() {
     //     );
     //   }
     // });
-    ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
-      if (!err) {
-        ch.bindQueue(q.queue, "contentservice", "contentsubmitted");
-        ch.consume(
-          q.queue,
-          function(msg) {
-            var enable_notificatio = process.env.ENABME_NOTIFICATION || true;
-            if (enable_notificatio) {
-              // console.log(msg);
-              var req = JSON.parse(msg.content.toString("utf8"));
-              console.log(
-                "New content submitted." + msg.content.toString("utf8")
-              );
-              try {
-                if (
-                  req.body.data.fields.phonenumber != "+989197682386" &&
-                  req.body.data.fields.phonenumber != "+989333229291"
-                ) {
-                  Spaces.findById(req.body.data.sys.spaceId).exec(
-                    (err, space) => {
-                      if (space) {
-                        var email = space.notification_email;
-                        console.log(email);
-                        var url = "https://caaser.herokuapp.com";
-                        msgController.sendEmailMessage(
-                          {
-                            to: email || "info.reqter@gmail.com",
-                            from:
-                              process.env.REQTER_NOTIFICATION_EMAIL ||
-                              "noreply@reqter.com",
-                            subject:
-                              req.body.data.fields.name.fa ||
-                              req.body.data.fields.name,
-                            text: url + "/contentview/" + req.body.data.sys.link
-                          },
-                          () => {}
-                        );
-                      } else {
-                        msgController.sendEmailMessage(
-                          {
-                            to: "info.reqter@gmail.com",
-                            from:
-                              process.env.REQTER_NOTIFICATION_EMAIL ||
-                              "noreply@reqter.com",
-                            subject:
-                              req.body.data.fields.name.fa ||
-                              req.body.data.fields.name,
-                            text: url + "/contentview/" + req.body.data.sys.link
-                          },
-                          () => {}
-                        );
-                      }
-                    }
-                  );
-                }
-              } catch (ex) {
-                console.log(ex);
-              }
-            } else {
-              console.log("Notification is disabled");
-            }
-          },
-          {
-            noAck: true
-          }
-        );
-      }
-    });
+    // ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
+    //   if (!err) {
+    //     ch.bindQueue(q.queue, "contentservice", "contentsubmitted");
+    //     ch.consume(
+    //       q.queue,
+    //       function(msg) {
+    //         var enable_notificatio = process.env.ENABME_NOTIFICATION || true;
+    //         if (enable_notificatio) {
+    //           // console.log(msg);
+    //           var req = JSON.parse(msg.content.toString("utf8"));
+    //           console.log(
+    //             "New content submitted." + msg.content.toString("utf8")
+    //           );
+    //           try {
+    //             if (
+    //               req.body.data.fields.phonenumber != "+989197682386" &&
+    //               req.body.data.fields.phonenumber != "+989333229291"
+    //             ) {
+    //               Spaces.findById(req.body.data.sys.spaceId).exec(
+    //                 (err, space) => {
+    //                   if (space) {
+    //                     var email = space.notification_email;
+    //                     console.log(email);
+    //                     var url = "https://caaser.herokuapp.com";
+    //                     msgController.sendEmailMessage(
+    //                       {
+    //                         to: email || "info.reqter@gmail.com",
+    //                         from:
+    //                           process.env.REQTER_NOTIFICATION_EMAIL ||
+    //                           "noreply@reqter.com",
+    //                         subject:
+    //                           req.body.data.fields.name.fa ||
+    //                           req.body.data.fields.name,
+    //                         text: url + "/contentview/" + req.body.data.sys.link
+    //                       },
+    //                       () => {}
+    //                     );
+    //                   } else {
+    //                     msgController.sendEmailMessage(
+    //                       {
+    //                         to: "info.reqter@gmail.com",
+    //                         from:
+    //                           process.env.REQTER_NOTIFICATION_EMAIL ||
+    //                           "noreply@reqter.com",
+    //                         subject:
+    //                           req.body.data.fields.name.fa ||
+    //                           req.body.data.fields.name,
+    //                         text: url + "/contentview/" + req.body.data.sys.link
+    //                       },
+    //                       () => {}
+    //                     );
+    //                   }
+    //                 }
+    //               );
+    //             }
+    //           } catch (ex) {
+    //             console.log(ex);
+    //           }
+    //         } else {
+    //           console.log("Notification is disabled");
+    //         }
+    //       },
+    //       {
+    //         noAck: true
+    //       }
+    //     );
+    //   }
+    // });
   });
 }
 start();
