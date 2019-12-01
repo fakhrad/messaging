@@ -25,8 +25,8 @@ exports.sendVerfiyCode = (phoneNumber, code, clientId, cb) => {
   }
 };
 
-exports.sendMessage = (phoneNumber, message, cb) => {
-  const service = provider.getsmsservice();
+exports.sendMessage = (phoneNumber, message, type, cb) => {
+  const service = provider.getservice(type);
   var result = { success: false, data: null, error: null };
   if (service != undefined) {
     service.sendMessage(phoneNumber, message, function(status, response) {

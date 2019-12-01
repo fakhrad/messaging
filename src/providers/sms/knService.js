@@ -26,7 +26,7 @@ exports.sendVerifyCode = (phoneNumber, code, clientId, callback) => {
 exports.sendMessage = (phoneNumber, message, callback) => {
   var message = {
     receptor: phoneNumber,
-    sender: process.env.KAVENEGAR_LINE || "100065995",
+    sender: process.env.KAVENEGAR_LINE || "10007119",
     message: message
   };
   console.log(message);

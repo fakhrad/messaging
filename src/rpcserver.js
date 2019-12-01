@@ -63,6 +63,7 @@ function whenConnected() {
           msgController.sendMessage(
             req.body.phoneNumber,
             req.body.message,
+            req.body.type ? req.body.type : "sms",
             result => {
               console.log(result);
               ch.sendToQueue(
@@ -103,6 +104,31 @@ function whenConnected() {
               ch.ack(msg);
             }
           );
+        } catch (ex) {
+          console.log(ex);
+          ch.sendToQueue(
+            msg.properties.replyTo,
+            new Buffer.from(JSON.stringify(ex)),
+            { correlationId: msg.properties.correlationId }
+          );
+          ch.ack(msg);
+        }
+      });
+    });
+    //Send SMS Message API
+    ch.assertQueue("sendSmsMessage", { durable: false }, (err, q) => {
+      ch.consume(q.queue, function reply(msg) {
+        var req = JSON.parse(msg.content.toString("utf8"));
+        try {
+          msgController.sendMessage(req.body.message, result => {
+            console.log(result);
+            ch.sendToQueue(
+              msg.properties.replyTo,
+              new Buffer.from(JSON.stringify(result)),
+              { correlationId: msg.properties.correlationId }
+            );
+            ch.ack(msg);
+          });
         } catch (ex) {
           console.log(ex);
           ch.sendToQueue(
