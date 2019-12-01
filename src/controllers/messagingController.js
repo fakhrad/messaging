@@ -25,11 +25,11 @@ exports.sendVerfiyCode = (phoneNumber, code, clientId, cb) => {
   }
 };
 
-exports.sendMessage = (phoneNumber, message, type, cb) => {
+exports.sendMessage = (message, type, cb) => {
   const service = provider.getservice(type);
   var result = { success: false, data: null, error: null };
   if (service != undefined) {
-    service.sendMessage(phoneNumber, message, function(status, response) {
+    service.sendMessage(message, function(status, response) {
       if (status != 200) {
         result.success = false;
         result.data = response;
@@ -50,6 +50,27 @@ exports.sendPushMessage = (device, message, data, cb) => {
   var result = { success: false, data: null, error: null };
   if (service != undefined) {
     service.sendMessage(device, message, data, function(status, response) {
+      if (status != 200) {
+        result.success = false;
+        result.data = response;
+        result.error = status;
+        cb(result);
+        return;
+      }
+      result.success = true;
+      result.error = undefined;
+      result.data = response;
+      cb(result);
+    });
+  }
+};
+
+var sendSmsMessage = (phoneNumber, message, cb) => {
+  console.log("Start sending sms ");
+  const service = provider.getsmsservice();
+  var result = { success: false, data: null, error: null };
+  if (service != undefined) {
+    service.sendMessage(phoneNumber, message, function(status, response) {
       if (status != 200) {
         result.success = false;
         result.data = response;
@@ -86,6 +107,7 @@ var sendEmailMessage = (message, cb) => {
   }
 };
 exports.sendEmailMessage = sendEmailMessage;
+exports.sendSmsMessage = sendSmsMessage;
 
 exports.sendEmailByTemplateDirect = (
   templateId,
