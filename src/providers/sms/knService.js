@@ -23,6 +23,27 @@ exports.sendVerifyCode = (phoneNumber, code, clientId, callback) => {
   });
 };
 
+exports.sendMessageWithTemplate = (
+  phoneNumber,
+  message,
+  template,
+  callback
+) => {
+  var message = {
+    receptor: phoneNumber,
+    token: message,
+    template: template || "verify"
+  };
+  console.log(message);
+  api.VerifyLookup(message, function(response, status) {
+    if (status == 200) {
+      callback(status, response);
+    } else {
+      callback(status, response);
+    }
+  });
+};
+
 exports.sendMessage = (phoneNumber, message, callback) => {
   var message = {
     receptor: phoneNumber,

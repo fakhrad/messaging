@@ -143,6 +143,39 @@ function whenConnected() {
         }
       });
     });
+    ch.assertQueue(
+      "sendSmsWithTemplateMessage",
+      { durable: false },
+      (err, q) => {
+        ch.consume(q.queue, function reply(msg) {
+          var req = JSON.parse(msg.content.toString("utf8"));
+          try {
+            msgController.sendSmsWithTemplateMessage(
+              req.body.phonenumber,
+              req.body.message,
+              req.body.template,
+              result => {
+                console.log(result);
+                ch.sendToQueue(
+                  msg.properties.replyTo,
+                  new Buffer.from(JSON.stringify(result)),
+                  { correlationId: msg.properties.correlationId }
+                );
+                ch.ack(msg);
+              }
+            );
+          } catch (ex) {
+            console.log(ex);
+            ch.sendToQueue(
+              msg.properties.replyTo,
+              new Buffer.from(JSON.stringify(ex)),
+              { correlationId: msg.properties.correlationId }
+            );
+            ch.ack(msg);
+          }
+        });
+      }
+    );
     //Send Email Message API
     ch.assertQueue("sendEmailMessage", { durable: false }, (err, q) => {
       ch.consume(q.queue, function reply(msg) {

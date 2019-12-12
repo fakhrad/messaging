@@ -1,12 +1,15 @@
 const provider = require("./../providerHelper");
 const templateManager = require("../templates/templateManager");
 
-exports.sendVerfiyCode = (phoneNumber, code, clientId, cb) => {
+exports.sendVerfiyCode = (phoneNumber, message, template, cb) => {
   var result = { success: false, data: null, error: null };
   const service = provider.getsmsservice();
   if (service != undefined) {
-    console.log("cote to client : ", code);
-    service.sendVerifyCode(phoneNumber, code, clientId, function(
+    console.log(
+      "sending message to : ",
+      phoneNumber + ", message : " + message
+    );
+    service.sendVerifyCode(phoneNumber, message, template, function(
       status,
       response
     ) {
@@ -86,6 +89,30 @@ var sendSmsMessage = (phoneNumber, message, cb) => {
   }
 };
 
+var sendSmsWithTemplateMessage = (phoneNumber, message, template, cb) => {
+  console.log("Start sending sms with template : " + template);
+  const service = provider.getsmsservice();
+  var result = { success: false, data: null, error: null };
+  if (service != undefined) {
+    service.sendMessageWithTemplate(phoneNumber, message, template, function(
+      status,
+      response
+    ) {
+      if (status != 200) {
+        result.success = false;
+        result.data = response;
+        result.error = status;
+        cb(result);
+        return;
+      }
+      result.success = true;
+      result.error = undefined;
+      result.data = response;
+      cb(result);
+    });
+  }
+};
+
 var sendEmailMessage = (message, cb) => {
   console.log("Start sending email ");
   const service = provider.getemailservice();
@@ -108,6 +135,7 @@ var sendEmailMessage = (message, cb) => {
 };
 exports.sendEmailMessage = sendEmailMessage;
 exports.sendSmsMessage = sendSmsMessage;
+exports.sendSmsWithTemplateMessage = sendSmsWithTemplateMessage;
 
 exports.sendEmailByTemplateDirect = (
   templateId,
