@@ -9,6 +9,7 @@ admin.initializeApp({
 
 exports.sendMessage = (device, msg, dataObject, callback) => {
   console.log(msg, device);
+  if (!device) return;
   // This registration token comes from the client FCM SDKs.
   var registrationToken = device;
   var notify = {
