@@ -27,6 +27,7 @@
     "async": "3.1.0",
     "firebase-admin": "7.0.0",
     "kavenegar": "1.1.4",
-    "mongoose": "5.5.14"
+    "mongoose": "5.5.14",
+    "sendmail": "1.6.1"
   }
 }

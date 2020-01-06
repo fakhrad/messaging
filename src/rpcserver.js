@@ -21,12 +21,12 @@ function start() {
       console.error("[AMQP]", err.message);
       return setTimeout(start, 1000);
     }
-    conn.on("error", function(err) {
+    conn.on("error", function (err) {
       if (err.message !== "Connection closing") {
         console.error("[AMQP] conn error", err.message);
       }
     });
-    conn.on("close", function() {
+    conn.on("close", function () {
       console.error("[AMQP] reconnecting");
       //return setTimeout(start, 1000);
     });
@@ -43,10 +43,10 @@ function whenConnected() {
       console.error("[AMQP]", err.message);
       //return setTimeout(start, 1000);
     }
-    ch.on("error", function(err) {
+    ch.on("error", function (err) {
       console.error("[AMQP] channel error", err.message);
     });
-    ch.on("close", function() {
+    ch.on("close", function () {
       console.log("[AMQP] channel closed");
     });
     console.log("Client connected.");
@@ -57,10 +57,10 @@ function whenConnected() {
 
     //SendMessage API
     ch.assertQueue("sendMessage", { durable: false }, (err, q) => {
-      ch.consume(q.queue, function reply(msg) {
+      ch.consume(q.queue, async function reply(msg) {
         var req = JSON.parse(msg.content.toString("utf8"));
         try {
-          msgController.sendMessage(
+          await msgController.sendMessage(
             req.body.message,
             req.body.type ? req.body.type : "sms",
             result => {
@@ -86,10 +86,10 @@ function whenConnected() {
     });
     //SendMessage API
     ch.assertQueue("sendVerifyCode", { durable: false }, (err, q) => {
-      ch.consume(q.queue, function reply(msg) {
+      ch.consume(q.queue, async function reply(msg) {
         var req = JSON.parse(msg.content.toString("utf8"));
         try {
-          msgController.sendVerfiyCode(
+          await msgController.sendVerfiyCode(
             req.body.phoneNumber,
             req.body.code,
             req.body.clientId,
@@ -116,10 +116,10 @@ function whenConnected() {
     });
     //Send SMS Message API
     ch.assertQueue("sendSmsMessage", { durable: false }, (err, q) => {
-      ch.consume(q.queue, function reply(msg) {
+      ch.consume(q.queue, async function reply(msg) {
         var req = JSON.parse(msg.content.toString("utf8"));
         try {
-          msgController.sendSmsMessage(
+          await msgController.sendSmsMessage(
             req.body.phonenumber,
             req.body.message,
             result => {
@@ -147,10 +147,10 @@ function whenConnected() {
       "sendSmsWithTemplateMessage",
       { durable: false },
       (err, q) => {
-        ch.consume(q.queue, function reply(msg) {
+        ch.consume(q.queue, async function reply(msg) {
           var req = JSON.parse(msg.content.toString("utf8"));
           try {
-            msgController.sendSmsWithTemplateMessage(
+            await msgController.sendSmsWithTemplateMessage(
               req.body.phonenumber,
               req.body.message,
               req.body.template,
@@ -178,10 +178,10 @@ function whenConnected() {
     );
     //Send Email Message API
     ch.assertQueue("sendEmailMessage", { durable: false }, (err, q) => {
-      ch.consume(q.queue, function reply(msg) {
+      ch.consume(q.queue, async function reply(msg) {
         var req = JSON.parse(msg.content.toString("utf8"));
         try {
-          msgController.sendEmailMessage(req.body.message, result => {
+          await msgController.sendEmailMessage(req.body.message, result => {
             console.log(result);
             ch.sendToQueue(
               msg.properties.replyTo,
@@ -203,10 +203,10 @@ function whenConnected() {
     });
     //SendPushMessge API
     ch.assertQueue("sendPushMessage", { durable: false }, (err, q) => {
-      ch.consume(q.queue, function reply(msg) {
+      ch.consume(q.queue, async function reply(msg) {
         var req = JSON.parse(msg.content.toString("utf8"));
         try {
-          msgController.sendPushMessage(
+          await msgController.sendPushMessage(
             req.body.device,
             req.body.message,
             req.body.data,

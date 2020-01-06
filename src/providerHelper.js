@@ -1,30 +1,29 @@
-const email = require('./providers/email/sendgridService');
+const email = require('./providers/email/smtpService');
 const push = require('./providers/push/fcmService');
 const sms = require('./providers/sms/knService')
 const config = require('./config');
 
 const service = undefined;
-exports.getsmsservice = ()=>{
+exports.getsmsservice = () => {
     return sms;
 }
 
-exports.getemailservice = ()=>{
+exports.getemailservice = () => {
     return email;
 }
 
-exports.getpushservice = ()=>{
+exports.getpushservice = () => {
     return push;
 }
 
-exports.getservice = (type)=>{
-    switch(type)
-    {
-        default :
-        case "push" : 
+exports.getservice = (type) => {
+    switch (type) {
+        default:
+        case "push":
             return getpushservice();
-        case "sms" : 
+        case "sms":
             return getsmsservice();
-        case "email" : 
+        case "email":
             return getemailservice();
     }
 }
