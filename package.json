@@ -28,6 +28,6 @@
     "firebase-admin": "7.0.0",
     "kavenegar": "1.1.4",
     "mongoose": "5.5.14",
-    "sendmail": "1.6.1"
+    "nodemailer": "6.4.2"
   }
 }

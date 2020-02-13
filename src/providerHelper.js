@@ -1,4 +1,4 @@
-const email = require('./providers/email/smtpService');
+const email = require('./providers/email/sendgridService');
 const push = require('./providers/push/fcmService');
 const sms = require('./providers/sms/knService')
 const config = require('./config');
