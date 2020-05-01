@@ -7,7 +7,7 @@ exports.sendMessage = async (msg, callback) => {
     let transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST || 'smtp.googlemail.com', // Gmail Host
         port: process.env.SMTP_PORT || 465, // Port
-        secure: true, // this is true as port is 465
+        secure: (process.env.SMTP_SSL && process.env.SMTP_SSL.toLowerCase() === "true") || false, // this is true as port is 465
         auth: {
             user: process.env.SMTP_USERNAME, //Gmail username
             pass: process.env.SMTP_PASSWORD // Gmail password

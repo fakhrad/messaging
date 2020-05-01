@@ -14,6 +14,7 @@ var rabbitHost =
 //var rabbitHost = process.env.RABBITMQ_HOST || "amqp://localhost:5672";
 
 var amqpConn = null;
+
 function start() {
   console.log("Start connecting : " + process.env.RABBITMQ_HOST);
   amqp.connect(rabbitHost, (err, conn) => {
@@ -37,6 +38,7 @@ function start() {
     whenConnected();
   });
 }
+
 function whenConnected() {
   amqpConn.createChannel((err, ch) => {
     if (err) {
@@ -56,7 +58,9 @@ function whenConnected() {
     console.log("Messaging service broker started!");
 
     //SendMessage API
-    ch.assertQueue("sendMessage", { durable: false }, (err, q) => {
+    ch.assertQueue("sendMessage", {
+      durable: false
+    }, (err, q) => {
       ch.consume(q.queue, async function reply(msg) {
         var req = JSON.parse(msg.content.toString("utf8"));
         try {
@@ -67,8 +71,9 @@ function whenConnected() {
               console.log(result);
               ch.sendToQueue(
                 msg.properties.replyTo,
-                new Buffer.from(JSON.stringify(result)),
-                { correlationId: msg.properties.correlationId }
+                new Buffer.from(JSON.stringify(result)), {
+                  correlationId: msg.properties.correlationId
+                }
               );
               ch.ack(msg);
             }
@@ -77,15 +82,18 @@ function whenConnected() {
           console.log(ex);
           ch.sendToQueue(
             msg.properties.replyTo,
-            new Buffer.from(JSON.stringify(ex)),
-            { correlationId: msg.properties.correlationId }
+            new Buffer.from(JSON.stringify(ex)), {
+              correlationId: msg.properties.correlationId
+            }
           );
           ch.ack(msg);
         }
       });
     });
     //SendMessage API
-    ch.assertQueue("sendVerifyCode", { durable: false }, (err, q) => {
+    ch.assertQueue("sendVerifyCode", {
+      durable: false
+    }, (err, q) => {
       ch.consume(q.queue, async function reply(msg) {
         var req = JSON.parse(msg.content.toString("utf8"));
         try {
@@ -97,8 +105,9 @@ function whenConnected() {
               if (!result.success) console.log(result);
               ch.sendToQueue(
                 msg.properties.replyTo,
-                new Buffer.from(JSON.stringify(result)),
-                { correlationId: msg.properties.correlationId }
+                new Buffer.from(JSON.stringify(result)), {
+                  correlationId: msg.properties.correlationId
+                }
               );
               ch.ack(msg);
             }
@@ -107,15 +116,18 @@ function whenConnected() {
           console.log(ex);
           ch.sendToQueue(
             msg.properties.replyTo,
-            new Buffer.from(JSON.stringify(ex)),
-            { correlationId: msg.properties.correlationId }
+            new Buffer.from(JSON.stringify(ex)), {
+              correlationId: msg.properties.correlationId
+            }
           );
           ch.ack(msg);
         }
       });
     });
     //Send SMS Message API
-    ch.assertQueue("sendSmsMessage", { durable: false }, (err, q) => {
+    ch.assertQueue("sendSmsMessage", {
+      durable: false
+    }, (err, q) => {
       ch.consume(q.queue, async function reply(msg) {
         var req = JSON.parse(msg.content.toString("utf8"));
         try {
@@ -126,8 +138,9 @@ function whenConnected() {
               console.log(result);
               ch.sendToQueue(
                 msg.properties.replyTo,
-                new Buffer.from(JSON.stringify(result)),
-                { correlationId: msg.properties.correlationId }
+                new Buffer.from(JSON.stringify(result)), {
+                  correlationId: msg.properties.correlationId
+                }
               );
               ch.ack(msg);
             }
@@ -136,16 +149,18 @@ function whenConnected() {
           console.log(ex);
           ch.sendToQueue(
             msg.properties.replyTo,
-            new Buffer.from(JSON.stringify(ex)),
-            { correlationId: msg.properties.correlationId }
+            new Buffer.from(JSON.stringify(ex)), {
+              correlationId: msg.properties.correlationId
+            }
           );
           ch.ack(msg);
         }
       });
     });
     ch.assertQueue(
-      "sendSmsWithTemplateMessage",
-      { durable: false },
+      "sendSmsWithTemplateMessage", {
+        durable: false
+      },
       (err, q) => {
         ch.consume(q.queue, async function reply(msg) {
           var req = JSON.parse(msg.content.toString("utf8"));
@@ -158,8 +173,9 @@ function whenConnected() {
                 console.log(result);
                 ch.sendToQueue(
                   msg.properties.replyTo,
-                  new Buffer.from(JSON.stringify(result)),
-                  { correlationId: msg.properties.correlationId }
+                  new Buffer.from(JSON.stringify(result)), {
+                    correlationId: msg.properties.correlationId
+                  }
                 );
                 ch.ack(msg);
               }
@@ -168,8 +184,9 @@ function whenConnected() {
             console.log(ex);
             ch.sendToQueue(
               msg.properties.replyTo,
-              new Buffer.from(JSON.stringify(ex)),
-              { correlationId: msg.properties.correlationId }
+              new Buffer.from(JSON.stringify(ex)), {
+                correlationId: msg.properties.correlationId
+              }
             );
             ch.ack(msg);
           }
@@ -177,7 +194,9 @@ function whenConnected() {
       }
     );
     //Send Email Message API
-    ch.assertQueue("sendEmailMessage", { durable: false }, (err, q) => {
+    ch.assertQueue("sendEmailMessage", {
+      durable: false
+    }, (err, q) => {
       ch.consume(q.queue, async function reply(msg) {
         var req = JSON.parse(msg.content.toString("utf8"));
         try {
@@ -185,8 +204,9 @@ function whenConnected() {
             console.log(result);
             ch.sendToQueue(
               msg.properties.replyTo,
-              new Buffer.from(JSON.stringify(result)),
-              { correlationId: msg.properties.correlationId }
+              new Buffer.from(JSON.stringify(result)), {
+                correlationId: msg.properties.correlationId
+              }
             );
             ch.ack(msg);
           });
@@ -194,15 +214,18 @@ function whenConnected() {
           console.log(ex);
           ch.sendToQueue(
             msg.properties.replyTo,
-            new Buffer.from(JSON.stringify(ex)),
-            { correlationId: msg.properties.correlationId }
+            new Buffer.from(JSON.stringify(ex)), {
+              correlationId: msg.properties.correlationId
+            }
           );
           ch.ack(msg);
         }
       });
     });
     //SendPushMessge API
-    ch.assertQueue("sendPushMessage", { durable: false }, (err, q) => {
+    ch.assertQueue("sendPushMessage", {
+      durable: false
+    }, (err, q) => {
       ch.consume(q.queue, async function reply(msg) {
         var req = JSON.parse(msg.content.toString("utf8"));
         try {
@@ -213,8 +236,9 @@ function whenConnected() {
             result => {
               ch.sendToQueue(
                 msg.properties.replyTo,
-                new Buffer.from(JSON.stringify(result)),
-                { correlationId: msg.properties.correlationId }
+                new Buffer.from(JSON.stringify(result)), {
+                  correlationId: msg.properties.correlationId
+                }
               );
               ch.ack(msg);
             }
@@ -223,8 +247,9 @@ function whenConnected() {
           console.log(ex);
           ch.sendToQueue(
             msg.properties.replyTo,
-            new Buffer.from(JSON.stringify(ex)),
-            { correlationId: msg.properties.correlationId }
+            new Buffer.from(JSON.stringify(ex)), {
+              correlationId: msg.properties.correlationId
+            }
           );
           ch.ack(msg);
         }

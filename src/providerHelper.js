@@ -1,4 +1,5 @@
-const email = require('./providers/email/sendgridService');
+const sendgrid = require('./providers/email/sendgridService');
+const smtp = require('./providers/email/smtpService');
 const push = require('./providers/push/fcmService');
 const sms = require('./providers/sms/knService')
 const config = require('./config');
@@ -9,7 +10,10 @@ exports.getsmsservice = () => {
 }
 
 exports.getemailservice = () => {
-    return email;
+    if (config.emailProvider.toLowerCase().trim() == "sendgrid")
+        return sendgrid;
+    else
+        return smtp;
 }
 
 exports.getpushservice = () => {
