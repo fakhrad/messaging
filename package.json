@@ -4,7 +4,7 @@
   "description": "Messaging service including push, sms and email ",
   "main": "index.js",
   "scripts": {
-    "start": "node ./src/bin/www",
+    "start": "node ./src/bin/www.cjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
